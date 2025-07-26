@@ -1,4 +1,4 @@
-import 'package:flutterble/models/BleDevice.dart';
+import 'package:flutterble/models/ble_device.dart';
 
 class MockBleRepository {
   // 10개의 Mock BLE 디바이스 리스트

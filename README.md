@@ -11,7 +11,7 @@ BLE 디바이스 검색, 연결 시뮬레이션, 데이터 송수신 기능을 �
 
 ## 개발 환경
 
-- Flutter 3.24.0
+- Flutter 3.24.5
 - Dart 3.5.4
 - 지원 플랫폼: Android, iOS
 - IDE: Android Studio (MacOS)
