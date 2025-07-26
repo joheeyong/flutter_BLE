@@ -16,6 +16,62 @@ BLE 디바이스 검색, 연결 시뮬레이션, 데이터 송수신 기능을 �
 - 지원 플랫폼: Android, iOS
 - IDE: Android Studio (MacOS)
 
+## 빌드 및 실행 방법
+
+1. Flutter SDK와 Android Studio 또는 VS Code 설치
+2. 프로젝트 루트 디렉터리에서 의존성 설치
+   ```bash
+   flutter pub get
+   ```
+3. Android 에뮬레이터 실행 또는 USB로 기기 연결 후
+   ```bash
+   flutter run
+   ```
+
+---
+
+## 상태 관리 설계 설명
+
+* Provider + ChangeNotifier 패턴을 기반으로 구현
+
+  * BleProvider
+  BLE 디바이스 목록 및 선택 상태 관리
+  디바이스 연결 및 재시도 로직 수행
+  
+  * DeviceDetailProvider
+  개별 디바이스 연결 상태 관리
+  데이터 송신 후 응답 생성 및 로그 관리
+  랜덤 수신 메시지 주기적 추가
+
+  * 모든 UI(DeviceListScreen, DeviceDetailScreen)는 Consumer를 사용하여 상태 변화를 즉시 반영
+
+---
+
+## Mock 데이터 및 연결 시뮬레이션
+
+  * MockBleRepository
+    * 가상의 BLE 디바이스 목록(RSSI 포함)을 반환
+    * 실제 스캔을 대체하여 개발/테스트 환경에서 사용
+
+  * 연결 시뮬레이션
+    * 연결 시 2초 지연 후 성공 처리
+    * 송신 메시지 → 1초 후 가상 응답 메시지 생성
+    * 주기적으로 랜덤 수신 메시지를 자동 추가 (실제 통신 환경 모방)
+
+---
+
+## 테스트 방법 및 커버리지
+
+* 단위 테스트(Unit Test)
+  DeviceDetailProvider, MockBleRepository의 상태 변화 및 데이터 로직 검증
+* 위젯 테스트(Widget Test)
+  DeviceListScreen, DeviceDetailScreen 주요 UI 요소 및 상태 변화 검증
+* 테스트 실행 및 커버리지 측정
+  ```bash
+  flutter test --coverage
+  ```
+  테스트 결과(coverage/lcov.info)는 CI에서 자동 수집 및 검증되며, 커버리지 확인이 가능
+
 ---
 
 ## 사용 라이브러리
