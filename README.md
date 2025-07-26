@@ -66,5 +66,9 @@ BLE 디바이스 검색, 연결 시뮬레이션, 데이터 송수신 기능을 �
 
 - BleDevice 모델 클래스 구현 (Equatable 적용)
 - MockBleRepository 작성 및 단위 테스트 완료
+- BleProvider 구현 (ChangeNotifier 사용)
+    - 디바이스 목록 로드 (fetchDevices)
+    - 디바이스 선택 및 선택 해제 기능
+- BleProvider 단위 테스트 완료
 - equatable 패키지 의존성 추가 및 적용
-- 기본 테스트 환경 구성 및 간단 테스트 실행 성공
+- 기본 CI (GitHub Actions) 파이프라인 적용
