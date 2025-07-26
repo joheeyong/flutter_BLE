@@ -30,10 +30,3 @@ jobs:
 
       - name: Build apk
         run: flutter build apk --debug
-
-      - name: Upload coverage report
-        if: success()
-        uses: actions/upload-artifact@v3
-        with:
-          name: coverage-report
-          path: coverage/lcov.info
