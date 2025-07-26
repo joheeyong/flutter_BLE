@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutterble/models/ble_device.dart';
 import 'package:flutterble/providers/ble_provider.dart';
+import 'package:flutterble/providers/device_detail_provider.dart';
 import 'package:flutterble/views/device_detail_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -83,7 +84,10 @@ class _DeviceListScreenState extends State<DeviceListScreen>
       // mounted 체크 후 context 안전하게 사용
       Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (_) => DeviceDetailScreen(device: device),
+          builder: (_) => ChangeNotifierProvider(
+            create: (_) => DeviceDetailProvider(),
+            child: DeviceDetailScreen(device: device),
+          ),
         ),
       );
     } catch (e) {

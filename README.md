@@ -78,8 +78,12 @@ BLE 디바이스 검색, 연결 시뮬레이션, 데이터 송수신 기능을 �
     - 연결 성공 시 DeviceDetailScreen으로 화면 전환
 - DeviceDetailScreen UI 구현 (StatelessWidget)
     - 선택된 디바이스의 ID 및 RSSI 신호 세기 표시
-    - 간단한 뒤로가기 버튼 제공
-    - 통신 관련 UI 및 기능은 향후 추가 가능
+    - 연결 상태에 따른 UI 변경 (연결 중 로딩, 연결됨 표시 등)
+    - 데이터 송수신 입력 및 수신 데이터 표시 (시뮬레이션)
+    - 연결 해제 버튼 제공
+- DeviceDetailProvider 구현 (ChangeNotifier)
+    - 디바이스 연결/연결 해제 상태 관리
+    - 데이터 전송 및 가상 응답 처리 기능 포함
 - Flutter 테스트 코드 작성 및 기본 위젯 테스트 통과
 - equatable 패키지 의존성 추가 및 적용
 - 기본 CI (GitHub Actions) 파이프라인 적용  
