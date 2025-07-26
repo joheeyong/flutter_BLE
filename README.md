@@ -23,6 +23,7 @@ BLE 디바이스 검색, 연결 시뮬레이션, 데이터 송수신 기능을 �
 - **Provider**: 상태 관리
 - **Mockito**: 테스트 더블(Mock) 생성
 - **build_runner**: Mockito 코드 생성 지원
+- **equatable**: 모델 비교 편의성
 - **flutter_test**: Flutter 기본 테스트 지원
 
 ---
@@ -58,3 +59,12 @@ BLE 디바이스 검색, 연결 시뮬레이션, 데이터 송수신 기능을 �
 
 4. **테스트 네이밍**
     - `given_when_then` 패턴을 따르며, 테스트 이름은 **한국어** 사용
+
+---
+
+## 현재 상태
+
+- BleDevice 모델 클래스 구현 (Equatable 적용)
+- MockBleRepository 작성 및 단위 테스트 완료
+- equatable 패키지 의존성 추가 및 적용
+- 기본 테스트 환경 구성 및 간단 테스트 실행 성공
