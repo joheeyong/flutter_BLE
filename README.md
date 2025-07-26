@@ -69,10 +69,17 @@ BLE 디바이스 검색, 연결 시뮬레이션, 데이터 송수신 기능을 �
 - BleProvider 구현 (ChangeNotifier 사용)
     - 디바이스 목록 로드 (fetchDevices)
     - 디바이스 선택 및 선택 해제 기능
-- BleProvider 단위 테스트 완료
+    - 디바이스 연결 시뮬레이션 (RSSI 기반 성공 확률 적용)
+    - 연결 재시도 로직 (최대 3회) 및 재시도 상태 관리
 - DeviceListScreen UI 구현
     - RSSI 기반 연결 상태 표시
     - 체크박스 선택/해제 기능 및 리스트 애니메이션 적용
-- DeviceListScreen 위젯 테스트 완료 (로딩 인디케이터, 디바이스 리스트 노출 테스트 포함)
+    - 연결 시도 버튼 및 연결 재시도 상태 표시
+    - 연결 성공 시 DeviceDetailScreen으로 화면 전환
+- DeviceDetailScreen UI 구현 (StatelessWidget)
+    - 선택된 디바이스의 ID 및 RSSI 신호 세기 표시
+    - 간단한 뒤로가기 버튼 제공
+    - 통신 관련 UI 및 기능은 향후 추가 가능
+- Flutter 테스트 코드 작성 및 기본 위젯 테스트 통과
 - equatable 패키지 의존성 추가 및 적용
-- 기본 CI (GitHub Actions) 파이프라인 적용
+- 기본 CI (GitHub Actions) 파이프라인 적용  

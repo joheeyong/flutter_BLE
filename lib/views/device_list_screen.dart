@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutterble/models/ble_device.dart';
 import 'package:flutterble/providers/ble_provider.dart';
+import 'package:flutterble/views/device_detail_screen.dart';
 import 'package:provider/provider.dart';
 
 class DeviceListScreen extends StatefulWidget {
@@ -32,12 +33,14 @@ class _DeviceListScreenState extends State<DeviceListScreen>
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final bleProvider = Provider.of<BleProvider>(context, listen: false);
-      await Future.delayed(const Duration(milliseconds: 800)); // 로딩 시뮬레이션
+      await Future.delayed(const Duration(milliseconds: 800));
       bleProvider.fetchDevices();
-      setState(() {
-        _isLoading = false;
-      });
-      _controller.forward(); // 리스트 페이드 인
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        _controller.forward();
+      }
     });
   }
 
@@ -48,10 +51,10 @@ class _DeviceListScreenState extends State<DeviceListScreen>
   }
 
   Color _rssiColor(int rssi) {
-    if (rssi >= -60) return Colors.green; // 매우 안정적
-    if (rssi >= -70) return Colors.blue; // 안정적
-    if (rssi >= -80) return Colors.orange; // 불안정
-    return Colors.red; // 매우 불안정
+    if (rssi >= -60) return Colors.green;
+    if (rssi >= -70) return Colors.blue;
+    if (rssi >= -80) return Colors.orange;
+    return Colors.red;
   }
 
   String _rssiStatus(int rssi) {
@@ -59,6 +62,41 @@ class _DeviceListScreenState extends State<DeviceListScreen>
     if (rssi >= -70) return '안정적';
     if (rssi >= -80) return '불안정';
     return '매우 불안정';
+  }
+
+  Future<void> _attemptConnection(BleProvider bleProvider) async {
+    final device = bleProvider.selectedDevice;
+    if (device == null) return;
+
+    try {
+      await bleProvider.connectWithRetry(
+        device,
+        onRetry: (attempt) {
+          if (mounted) {
+            setState(() {}); // retryCount 업데이트 표시
+          }
+        },
+      );
+
+      if (!mounted) return;
+
+      // mounted 체크 후 context 안전하게 사용
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => DeviceDetailScreen(device: device),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('연결 실패: ${device.name}')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {}); // isRetrying 상태 갱신
+      }
+    }
   }
 
   @override
@@ -101,8 +139,7 @@ class _DeviceListScreenState extends State<DeviceListScreen>
                         ),
                       ],
                       border: isSelected
-                          ? Border.all(
-                          color: Colors.blueAccent, width: 2)
+                          ? Border.all(color: Colors.blueAccent, width: 2)
                           : null,
                     ),
                     child: ListTile(
@@ -153,29 +190,36 @@ class _DeviceListScreenState extends State<DeviceListScreen>
             ),
             Padding(
               padding: const EdgeInsets.all(16),
-              child: ElevatedButton.icon(
-                onPressed: bleProvider.selectedDevice != null
-                    ? () {
-                  ScaffoldMessenger.of(context)
-                      .showSnackBar(SnackBar(
-                    content: Text(
-                        '${bleProvider.selectedDevice!.name} 연결 시도 중...'),
-                  ));
-                }
-                    : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blueAccent,
-                  minimumSize: const Size.fromHeight(48),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+              child: Column(
+                children: [
+                  ElevatedButton.icon(
+                    onPressed: bleProvider.selectedDevice != null &&
+                        !bleProvider.isRetrying
+                        ? () => _attemptConnection(bleProvider)
+                        : null,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blueAccent,
+                      minimumSize: const Size.fromHeight(48),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    icon: const Icon(Icons.link),
+                    label: const Text(
+                      '연결 시도',
+                      style: TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
                   ),
-                ),
-                icon: const Icon(Icons.link),
-                label: const Text(
-                  '연결 시도',
-                  style: TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.bold),
-                ),
+                  if (bleProvider.isRetrying && bleProvider.retryCount > 1)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: Text(
+                        '연결 재시도 중... (${bleProvider.retryCount}/3)',
+                        style: const TextStyle(color: Colors.redAccent),
+                      ),
+                    ),
+                ],
               ),
             ),
           ],
