@@ -81,7 +81,6 @@ class _DeviceListScreenState extends State<DeviceListScreen>
 
       if (!mounted) return;
 
-      // mounted 체크 후 context 안전하게 사용
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (_) => ChangeNotifierProvider(
@@ -120,6 +119,43 @@ class _DeviceListScreenState extends State<DeviceListScreen>
         opacity: _fadeAnimation,
         child: Column(
           children: [
+            // 연결된 디바이스가 있으면 상단에 표시
+            if (bleProvider.selectedDevice != null) ...[
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 16, vertical: 12),
+                margin: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                decoration: BoxDecoration(
+                  color: Colors.blue.shade100,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Colors.blueAccent),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      '현재 연결 선택된 디바이스',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: Colors.blueAccent,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      '이름: ${bleProvider.selectedDevice!.name}',
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                    Text(
+                      'ID: ${bleProvider.selectedDevice!.deviceId}',
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+
             Expanded(
               child: ListView.builder(
                 padding: const EdgeInsets.all(16),
@@ -181,7 +217,6 @@ class _DeviceListScreenState extends State<DeviceListScreen>
                           : null,
                       onTap: () {
                         if (bleProvider.selectedDevice == device) {
-                          // 같은 디바이스를 클릭하면 선택 해제
                           bleProvider.clearSelection();
                         } else {
                           bleProvider.selectDevice(device);
@@ -192,6 +227,7 @@ class _DeviceListScreenState extends State<DeviceListScreen>
                 },
               ),
             ),
+
             Padding(
               padding: const EdgeInsets.all(16),
               child: Column(

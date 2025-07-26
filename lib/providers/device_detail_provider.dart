@@ -1,16 +1,23 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:flutter/foundation.dart';
 
 class DeviceDetailProvider extends ChangeNotifier {
   bool _isConnecting = false;
   bool _isConnected = false;
-  String _receivedData = '';
+
+  final List<String> _sentMessages = [];
+  final List<String> _receivedMessages = [];
+
+  Timer? _mockResponseTimer;
+  final Random _random = Random();
 
   bool get isConnecting => _isConnecting;
   bool get isConnected => _isConnected;
-  String get receivedData => _receivedData;
 
-  /// 디바이스 연결 시뮬레이션 (2초 후 성공)
+  List<String> get sentMessages => List.unmodifiable(_sentMessages);
+  List<String> get receivedMessages => List.unmodifiable(_receivedMessages);
+
   Future<void> connect() async {
     _isConnecting = true;
     notifyListeners();
@@ -20,22 +27,43 @@ class DeviceDetailProvider extends ChangeNotifier {
     _isConnecting = false;
     _isConnected = true;
     notifyListeners();
+
+    _startMockResponseTimer();
   }
 
-  /// 연결 해제
   void disconnect() {
     _isConnected = false;
-    _receivedData = '';
+    _sentMessages.clear();
+    _receivedMessages.clear();
+    _mockResponseTimer?.cancel();
     notifyListeners();
   }
 
-  /// 데이터 전송 (1초 후 가상 응답)
   void sendData(String data) {
     if (!_isConnected) return;
 
-    Timer(const Duration(seconds: 1), () {
-      _receivedData = '응답 수신: $data';
+    _sentMessages.add(data);
+    notifyListeners();
+  }
+
+  void _startMockResponseTimer() {
+    _mockResponseTimer?.cancel();
+
+    _mockResponseTimer = Timer.periodic(const Duration(seconds: 3), (_) {
+      if (!_isConnected) {
+        _mockResponseTimer?.cancel();
+        return;
+      }
+
+      final response = '응답: Random Data ${_random.nextInt(100)}';
+      _receivedMessages.add(response);
       notifyListeners();
     });
+  }
+
+  @override
+  void dispose() {
+    _mockResponseTimer?.cancel();
+    super.dispose();
   }
 }
